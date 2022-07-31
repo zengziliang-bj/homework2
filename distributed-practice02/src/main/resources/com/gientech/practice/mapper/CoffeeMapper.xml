@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gientech.practice.mapper.CoffeeMapper">
+  <resultMap id="BaseResultMap" type="com.gientech.practice.model.Coffee">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="PRICE" jdbcType="DECIMAL" property="price" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, CREATE_TIME, UPDATE_TIME, NAME, PRICE
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" /> FROM t_coffee
+    WHERE  ID = #{id,jdbcType=BIGINT}
+  </select>
+
+  <select id="selectByPrimaryKeys" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" /> FROM t_coffee
+    <where>
+      <if test="ids != null and ids.length > 0">
+        and id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+          #{id}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <select id="selectByCondition" parameterType="com.gientech.practice.model.Coffee" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List" /> FROM t_coffee
+    <where>
+      <if test="id != null">
+        AND ID = #{id,jdbcType=BIGINT}
+      </if>
+      <if test="name != null">
+        AND NAME = #{name,jdbcType=BIGINT}
+      </if>
+    </where>
+  </select>
+
+  <select id="testAppendSql" resultType="HashMap">
+    SELECT * FROM t_coffee ${appendSql}
+  </select>
+
+  <insert id="insertSelective" parameterType="com.gientech.practice.model.Coffee">
+    INSERT into t_coffee
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="createTime != null">
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+      <if test="name != null">
+        NAME,
+      </if>
+      <if test="price != null">
+        PRICE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.gientech.practice.model.Coffee">
+    UPDATE t_coffee
+    <set>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="name != null">
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null">
+        PRICE = #{price,jdbcType=BIGINT},
+      </if>
+    </set>
+    WHERE ID = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>
